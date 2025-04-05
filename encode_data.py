@@ -10,25 +10,32 @@ from typing import List, Dict, Any, Tuple
 
 full_data = load_clients("clients.pkl")
 
-def data_to_df(full_data:list):
+
+def data_to_df(full_data: list):
     dfs = []
     for client in full_data:
         keep = [
             ['gender', 'country_code', 'birth_date'],
-            ['country_of_domicile', 'nationality', 'marital_status',
-             'higher_education', 'employment_history', 'aum', 'inheritance_details',
-             'real_estate_details', 'investment_risk_profile', 'investment_horizon', 'investment_experience',
+            ['country_of_domicile', 'nationality', 'marital_status', 'real_estate_details', 'investment_risk_profile',
+             'higher_education', 'employment_history', 'investment_risk_profile', 'investment_horizon',
+             'investment_experience',
              'type_of_mandate', 'preferred_markets', 'currency'],
             [],
             [],
             ['label']
-                ]
-        keys=client.keys()
-        res={}
+        ]
+        keys = client.keys()
+        res = {}
         for key, subkeys in zip(keys, keep):
-            d = {subkey: client[key][subkey] for subkey in subkeys }
-            res = res|d
+            d = {subkey: client[key][subkey] for subkey in subkeys}
+            res = res | d
+        # Convert label to 1 or 0 if accepted or rejected
+        if res['label'] == 'Reject':
+            res['label'] = 0
+        elif res['label'] == 'Accept':
+            res['label'] = 1
         dfs.append(res)
+
     return pd.DataFrame.from_records(dfs)
 
 df = data_to_df(full_data)
@@ -139,7 +146,6 @@ def encode(x:pd.DataFrame)-> pd.DataFrame:
     x = encode_currency(x,currency_encoder)
     x = encode_higher_education(x)
     return x
-
 
 def calculate_effective_experience(jobs: List[Tuple[int, int]]) -> int:
     """
