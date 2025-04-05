@@ -15,3 +15,9 @@ def currency_match(client):
     if client['account_form']['currency'] != client['client_profile']['currency']:
         flags = False
     return flags
+
+def no_mandate(client):
+    flags = True
+    if client['client_profile']['type_of_mandate'] == '':
+        flags = False
+    return flags
