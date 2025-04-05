@@ -17,6 +17,8 @@ def load_clients(pickle_path):
         for i in range(len(clients)):
             if type(clients[i]['account_form']['passport_number']) != str:
                 clients[i]['account_form']['passport_number'] = clients[i]['account_form']['passport_number'][0]
+            if type(clients[i]['client_profile']['passport_number']) != str:
+                clients[i]['client_profile']['passport_number'] = clients[i]['client_profile']['passport_number'][0]
         return clients
     except Exception as e:
         print(f"Failed to load pickle file: {e}")
