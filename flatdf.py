@@ -1,4 +1,4 @@
-def data_to_df(full_data:List):
+def data_to_df(full_data:list):
     dfs = []
     for client in full_data:
         keep = [
