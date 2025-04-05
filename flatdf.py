@@ -1,3 +1,10 @@
+import pandas as pd
+#import encoding from pytorch
+from torch.utils.data import Dataset, DataLoader
+from sklearn.preprocessing import LabelEncoder
+
+country_code_encoder = LabelEncoder()
+
 def data_to_df(full_data:list):
     dfs = []
     for client in full_data:
@@ -18,3 +25,16 @@ def data_to_df(full_data:list):
             res = res|d
         dfs.append(res)
     return pd.DataFrame.from_records(dfs)
+
+
+
+X = data_to_df(full_data)
+
+
+def encode_country_code(df: pd.DataFrame) -> pd.DataFrame:
+    country_code_encoder.fit(df['country_code'])
+    df['country_code'] = country_code_encoder.transform(df['country_code'])
+    return df
+
+X = encode_country_code(X)
+print(X["country_code"])
