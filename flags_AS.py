@@ -39,23 +39,44 @@ def get_nomi_instance(country_code):
         _nomi_cache[country_code] = pgeocode.Nominatim(country_code)
     return _nomi_cache[country_code]
 
-def validate_postal_code_for_client(client):
+def validate_postal_code_for_client(client, check_city=False):
     """
     Validates if the postal code exists in the provided city and country.
 
     Parameters:
-        client (dict): a client info.
+        client_profile (dict): Must include 'address' and 'country_of_domicile'.
+        check_city (bool): if true we use this function to find whther city really belongs to the country
 
     Returns:
         bool: True if postal code matches the city in any listed country, else False.
     """
-
-    # client_profile (dict): Must include 'address' and 'country_of_domicile'.
     client_profile = client['client_profile']
     country_names = [name.strip() for name in client_profile.get('country_of_domicile', '').split(',')]
     address = client_profile.get('address', {})
     city = address.get('city', '').lower()
     postal_code = address.get('postal code', '')
+
+    if check_city:
+        for country_name in country_names:
+            country_code = get_country_code(country_name)
+            if not country_code:
+                continue  # Skip invalid countries
+
+            nomi = get_nomi_instance(country_code)
+            df = nomi._data
+
+            if df is None or df.empty:
+                continue
+            
+            # Convert to NumPy array and use list comprehension (still fast)
+            col_values = df[['place_name', 'postal_code']].values
+            mask1 = [val_pair[0].lower() in city or city in val_pair[0].lower() in city for val_pair in col_values]
+            df = df[mask1]
+
+            if not df.empty:
+                return True
+            
+        return False
 
     for country_name in country_names:
         country_code = get_country_code(country_name)
@@ -63,13 +84,28 @@ def validate_postal_code_for_client(client):
             continue  # Skip invalid countries
 
         nomi = get_nomi_instance(country_code)
-        postal_info = nomi.query_postal_code(postal_code)['postal_code']
+        df = nomi._data
 
-        if postal_info is None:
+        if df is None or df.empty:
             continue
+        
+        # Convert to NumPy array and use list comprehension (still fast)
+        col_values = df[['place_name', 'postal_code']].values
+        # mask1 = [val_pair[1] == postal_code and val_pair[0] in city for val_pair in col_values]
+        mask1 = [val_pair[1] == postal_code for val_pair in col_values]
+        df = df[mask1]
 
-        # matched_cities = [c.strip().lower() for c in postal_info.place_name.split(',')]
-        if postal_info == postal_code:
-            return True  # Valid match
+        if not df.empty:
+            return True
+        
+        # postal_info = nomi.query_postal_code(postal_code)['postal_code']
+
+        # if postal_info is None:
+        #     continue
+
+        # # matched_cities = [c.strip().lower() for c in postal_info.place_name.split(',')]
+        # if postal_info == postal_code:
+        #     return True  # Valid match
 
     return False  # No match found
+
