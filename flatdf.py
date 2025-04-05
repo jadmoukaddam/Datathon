@@ -9,7 +9,7 @@ def data_to_df(full_data:list):
     dfs = []
     for client in full_data:
         keep = [
-            ['gender', 'country_code', 'nationality', 'birth_date'],
+            ['gender', 'country_code', 'birth_date'],
             ['country_of_domicile', 'nationality', 'marital_status',
              'higher_education', 'employment_history', 'aum', 'inheritance_details',
              'real_estate_details', 'investment_risk_profile', 'investment_horizon', 'investment_experience',
@@ -25,7 +25,6 @@ def data_to_df(full_data:list):
             res = res|d
         dfs.append(res)
     return pd.DataFrame.from_records(dfs)
-
 
 
 X = data_to_df(full_data)
