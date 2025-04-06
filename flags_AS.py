@@ -109,3 +109,68 @@ def validate_postal_code_for_client(client, check_city=False):
 
     return False  # No match found
 
+#### NEW FLAGS BASED on EMPTY STRINGS
+
+
+def missing_any_inheritance_detail(client):
+    # inheritance details missing
+    if client['client_profile']['aum']['inheritance'] != 0:
+        for key, value in client['client_profile']['inheritance_details'].items():
+            if value == '':
+                return False
+    return True
+
+def missing_psprt_num_client_profile(client):
+    # passport number missing in client_profile
+    if client['client_profile']['passport_number'] is None or client['client_profile']['passport_number'] == '':
+        return False
+    return True
+
+def missing_phone_num_client_profile(client):
+    # phone number missing in client_profile
+    if client['client_profile']['phone_number'] is None or client['client_profile']['phone_number'] == '':
+        return False
+    return True
+
+def missing_any_address_detail_client_profile(client):
+    # any address info missing in client_profile
+    for key, value in client['client_profile']['address'].items():
+        if value is None or value == '':
+            return False
+    return True
+
+def missing_any_employment_detail_client_profile(client):
+    # any employment history missing in client_profile
+    if client['client_profile']['employment_history'] != []:
+        for job in client['client_profile']['employment_history']:
+            for key, value in job.items():
+                if value == '':
+                    return False
+    return True
+
+def missing_education_background(client):
+    # education background missing in client_profile (should be the check for any note missing in client_description from my point of view)
+    if client['client_description']['Education Background'] == '':
+        return False
+    return True
+
+def missing_any_psprt_info(client):
+    # any info except middle name is missing in passport info
+    for key, value in client['passport'].items():
+        if key != 'middle_name' and value == '':   
+            return False
+    return True
+
+def missing_info_account_form(client):
+    # any info except middle name and address is missing in account_form
+    for key, value in client['account_form'].items():
+        if key != 'address' and key != 'middle_name' and value == '':   
+            return False
+    return True
+
+def missing_any_address_info_account_form(client):
+    # any address info missing in account_form
+    for key, value in client['account_form']['address'].items():
+        if value is None or value == '':
+            return False
+    return True
