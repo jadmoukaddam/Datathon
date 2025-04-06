@@ -3,12 +3,12 @@ import zipfile
 import json
 
 # Path to your folder containing client0.zip to client9999.zip
-zip_dir = "data/train"  # <-- CHANGE THIS TO YOUR FOLDER PATH
+zip_dir = "data/eval"  # <-- CHANGE THIS TO YOUR FOLDER PATH
 
 # Initialize matrix with 10,000 client entries
-clients = [None] * 10000
+clients = [None] * 1000
 
-for i in range(10000):
+for i in range(1000):
     zip_filename = f"client_{i}.zip"
     zip_path = zip_dir+"/"+zip_filename
     print(zip_path)
@@ -30,7 +30,7 @@ for i in range(10000):
 # Now `clients[0]` to `clients[9999]` each hold a dict of JSONs for that client
 
 import pickle
-with open("clients.pkl", "wb") as f:
+with open("clients_eval.pkl", "wb") as f:
     pickle.dump(clients, f)
 
 
