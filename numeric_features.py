@@ -33,11 +33,21 @@ def extract_numeric_features(full_data: List[Dict[str, Any]]) -> pd.DataFrame:
         A pandas DataFrame containing engineered numeric features.
     """
 
+    # total AUM
     aum_vec = [np.sum(list(client['client_profile']['aum'].values())) for client in full_data]
+
+    # total property value
     property_value_vec = [client['client_profile']['aum']['real_estate_value'] for client in full_data]
+    #number of propertis owned
     property_count_vec = [len(client['client_profile']['real_estate_details']) for client in full_data]
+
+    # total value inherited
     inheritance_vec = [client['client_profile']['aum']['inheritance'] for client in full_data]
+
+    # client's savings
     savings_vec = [client['client_profile']['aum']['savings'] for client in full_data]
+
+    # how many different jobs did the client have
     job_count_vec = [len(client['client_profile']['employment_history']) for client in full_data]
 
     # Compute property-to-cash ratio with zero-division handling
